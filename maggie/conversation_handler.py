@@ -1,8 +1,9 @@
 # conversation_handler.py
 
 from utils import extract_email_address, extract_conversation_key
-from append_messages import append_to_conversation_history, append_to_processed_emails
+from append_messages import append_to_conversation_history
 from conversation_history_handler import retrieve_conversation_history
+
 def check_and_process_conversation_key(email, pool):
     sender = extract_email_address(email["email"]["from"])
     subject = email["email"]["subject"]
@@ -13,7 +14,7 @@ def check_and_process_conversation_key(email, pool):
     if conversation_key:
         print(f"Conversation key found: {conversation_key}. Proceeding to check for conversation history.")
         # Step 2: Check for existing conversation history
-        conversation_history = retrieve_conversation_history(conversation_key, sender, pool)
+        conversation_history = retrieve_conversation_history(conversation_key, pool)
 
         # Step 3: Append the email to the conversation history
         append_to_conversation_history(email, conversation_key, pool)
@@ -34,6 +35,9 @@ def check_conversation_existence(conversation_key, sender, pool):
     """
     Check if a conversation exists for the given conversation key and sender.
     """
+    # Extract just the email address for checking
+    sender_email = extract_email_address(sender)
+    
     query = """
         SELECT conv_key 
         FROM tb_conversation 
@@ -45,7 +49,7 @@ def check_conversation_existence(conversation_key, sender, pool):
         AND active_service = TRUE;
     """
     
-    emails_to_check = [f"%{sender.strip()}%"]
+    emails_to_check = [f"%{sender_email.strip()}%"]
 
     conn = pool.getconn()
     try:

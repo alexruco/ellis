@@ -1,6 +1,7 @@
 #append_messages.py
 from utils import extract_email_address
 from datetime import datetime
+
 def append_to_conversation_history(email, conv_key, pool):
     insert_query = """
         INSERT INTO tb_conversation_history (sender, recipient, sender_type, content, timestamp, attachment, conv_key)

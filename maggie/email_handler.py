@@ -1,7 +1,7 @@
 import imaplib
 import email
 from email.header import decode_header
-from db_connector import get_db_connection
+from utils import encryptor
 
 def receive_emails(username, password, imap_server):
     mail = imaplib.IMAP4_SSL(imap_server)
@@ -85,15 +85,3 @@ def filter_unprocessed_emails(emails_with_hashes, pool):
     unprocessed_emails = [email for email in emails_with_hashes if email["hash"] not in processed_hashes]
 
     return unprocessed_emails
-
-def encryptor(emails):
-    import hashlib
-    email_hashes = []
-    
-    for email in emails:
-        hash_object = hashlib.sha256()
-        email_data = f"{email['date']}{email['from']}{email['to']}{email['subject']}{email['body']}"
-        hash_object.update(email_data.encode('utf-8'))
-        email_hashes.append(hash_object.hexdigest())
-    
-    return email_hashes
