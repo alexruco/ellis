@@ -7,7 +7,7 @@ from config import DBNAME, USER, DB_PASSWORD, HOST, PORT
 # You can use connection pooling for better performance
 connection_pool = None
 
-def init_db_pool(minconn=1, maxconn=10):
+def init_db_pool(minconn=1, maxconn=20):
     global connection_pool
     try:
         connection_pool = psycopg2.pool.SimpleConnectionPool(minconn, maxconn,

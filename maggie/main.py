@@ -1,20 +1,26 @@
-import sys
-print(sys.path)
-from kate import get_response
-import matilde
-from send_message import send_message
+from email_processor import receive_emails, filter_unprocessed_emails
+from conversation_manager import retrieve_conversation_history
+from db_connector import init_db_pool, close_all_connections, get_db_pool
+from config import USERNAME, PASSWORD, IMAP_SERVER
 
-def maggie(website):
-    body = 'This is a test email sent from Joseph Roulin.'
-    recipient = 'crespo.crespo@gmail.com'
-    send_message(body, recipient)
-    #print("Hello Maggie!")
-# Send a prompt to OpenAI
-#website_audit = "example website audit"
-#welcome_email_message = "example welcome email message"
-#initial_prompt = (f"You are Maggie, an SEO Copilot. We were hired by Bob, owner of the website example.com. You will be talking with them by email. We sent they this welcome email message: {welcome_email_message}. Now you will help them to improve their website. Your main tolls will be your knowledge on SEO, and this website audit: {website_audit}")
-#response = get_response('Hello, world!', 'llama3')
-#print(response)
+def main():
+    init_db_pool()
+    pool = get_db_pool()
 
-#example usage:
-using_test = maggie('mysitefaster.com')
+    emails_with_hashes = receive_emails(USERNAME, PASSWORD, IMAP_SERVER)
+
+    unprocessed_emails = filter_unprocessed_emails(emails_with_hashes, pool)
+
+    for email_data in unprocessed_emails:
+        conversation_history = retrieve_conversation_history(email_data, pool)
+        if conversation_history:
+            print("Conversation History Found:")
+            for entry in conversation_history:
+                print(entry)
+        else:
+            print("No conversation found for this email.")
+
+    close_all_connections()
+
+if __name__ == "__main__":
+    main()
