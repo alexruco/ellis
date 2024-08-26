@@ -6,9 +6,6 @@ def extract_email_address(full_email):
     match = re.search(r'[\w\.-]+@[\w\.-]+', full_email)
     return match.group(0) if match else None
 
-
-import re
-
 def extract_conversation_key(subject):
     # Strip common prefixes like "Re:", "Fwd:", etc.
     clean_subject = re.sub(r"^(Re|Fwd):\s*", "", subject, flags=re.IGNORECASE)
