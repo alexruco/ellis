@@ -59,3 +59,18 @@ def check_conversation_existence(conversation_key, sender, pool):
             return bool(result)
     finally:
         pool.putconn(conn)
+
+def filter_unprocessed_emails(emails_with_hashes, pool):
+    hashes_to_check = [email["hash"] for email in emails_with_hashes]
+
+    query = """
+        SELECT email_hash FROM tb_processed_emails WHERE email_hash = ANY(%s);
+    """
+    with pool.getconn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(query, (hashes_to_check,))
+            processed_hashes = [row[0] for row in cur.fetchall()]
+
+    unprocessed_emails = [email for email in emails_with_hashes if email["hash"] not in processed_hashes]
+
+    return unprocessed_emails

@@ -2,7 +2,7 @@
 
 import psycopg2
 from psycopg2 import pool
-from config import DBNAME, USER, DB_PASSWORD, HOST, PORT
+from get_env import DBNAME, USER, DB_PASSWORD, HOST, PORT
 
 # You can use connection pooling for better performance
 connection_pool = None

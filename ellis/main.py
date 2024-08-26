@@ -1,17 +1,17 @@
 # main.py
 
-from email_handler import receive_emails, filter_unprocessed_emails
+from josephroulin import receive_emails
 from db_connector import init_db_pool, close_all_connections, get_db_pool
-from conversation_handler import extract_conversation_key, check_conversation_existence
+from conversation_handler import extract_conversation_key, check_conversation_existence, filter_unprocessed_emails
 from conversation_history_handler import (
     append_to_conversation_history,
     retrieve_conversation_history
 )
 from append_messages import append_to_processed_emails
-from config import USERNAME, PASSWORD, IMAP_SERVER
+from get_env import USERNAME, PASSWORD, IMAP_SERVER
 from utils import log_error, log_success
 
-def main():
+def get_messages():
     # Initialize DB connection pool
     init_db_pool()
     
@@ -77,6 +77,7 @@ def main():
 
     # Close DB connections
     close_all_connections()
+    return conversation_history
 
 if __name__ == "__main__":
-    main()
+    get_messages()

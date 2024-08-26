@@ -1,9 +1,9 @@
-# maggie/__init__.py
+# ellis/__init__.py
 
 __version__ = "0.1.0"
 
-from .main import maggie
+from .main import get_messages
 
 __all__ = [
-    "maggie",
+    "get_messages",
 ]
