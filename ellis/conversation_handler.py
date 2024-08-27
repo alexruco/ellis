@@ -1,7 +1,6 @@
 # conversation_handler.py
 
-from utils import extract_email_address, extract_conversation_key
-from conversation_history_handler import retrieve_conversation_history, append_to_conversation_history
+from emails_handler import append_to_conversation_history, extract_email_address, extract_conversation_key
 
 def check_and_process_conversation_key(email, pool):
     sender = extract_email_address(email["email"]["from"])
@@ -30,7 +29,7 @@ def check_and_process_conversation_key(email, pool):
 
     return None
 
-def check_conversation_existence(conversation_key, sender, pool):
+def check_active_conversation_existence(conversation_key, sender, pool):
     """
     Check if a conversation exists for the given conversation key and sender.
     """
@@ -59,42 +58,35 @@ def check_conversation_existence(conversation_key, sender, pool):
     finally:
         pool.putconn(conn)
 
-def filter_unprocessed_emails(emails_with_hashes, pool):
-    hashes_to_check = [email["hash"] for email in emails_with_hashes]
-
+def check_conversation_existence(conv_key, pool):
     query = """
-        SELECT email_hash FROM tb_processed_emails WHERE email_hash = ANY(%s);
-    """
-    with pool.getconn() as conn:
-        with conn.cursor() as cur:
-            cur.execute(query, (hashes_to_check,))
-            processed_hashes = [row[0] for row in cur.fetchall()]
-
-    unprocessed_emails = [email for email in emails_with_hashes if email["hash"] not in processed_hashes]
-
-    return unprocessed_emails
-
-def append_to_processed_emails(email_hash, pool):
-    # Check if the hash already exists
-    check_query = """
-        SELECT 1 FROM tb_processed_emails WHERE email_hash = %s;
-    """
-    insert_query = """
-        INSERT INTO tb_processed_emails (email_hash)
-        VALUES (%s);
+        SELECT 1 FROM tb_conversation WHERE conv_key = %s;
     """
     conn = pool.getconn()
     try:
         with conn.cursor() as cur:
-            # Check if the hash exists
-            cur.execute(check_query, (email_hash,))
-            exists = cur.fetchone()
+            cur.execute(query, (conv_key,))
+            result = cur.fetchone()
+            return bool(result)
+    finally:
+        pool.putconn(conn)
 
-            if not exists:
-                # If the hash doesn't exist, insert it
-                cur.execute(insert_query, (email_hash,))
-                conn.commit()
-            else:
-                print(f"Email with hash {email_hash} has already been processed.")
+def retrieve_conversation_history(conversation_key, pool):
+    """
+    Retrieve the conversation history for a given conversation key.
+    """
+    query = """
+        SELECT sender, recipient, sender_type, content, timestamp, attachment 
+        FROM tb_conversation_history 
+        WHERE conv_key = %s 
+        ORDER BY timestamp ASC;
+    """
+
+    conn = pool.getconn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query, (conversation_key,))
+            conversation_history = cur.fetchall()
+            return conversation_history
     finally:
         pool.putconn(conn)
