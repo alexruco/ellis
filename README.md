@@ -1,6 +1,6 @@
 # Ellis  🧠
 
-Welcome to **Ellis**! This project is named in honor of Ellis Horowitz, a computer scientist and specialist in the history of computer languages. The module is designed to [brief description of what your module does].
+Welcome to **Ellis**! This project is named in honor of Ellis Horowitz, a computer scientist and specialist in the history of computer languages. The module is designed to retrieve messages sent to an email from admin, user and AI, and organize messages in a thread.
 
 ## Features ✨
 
@@ -14,11 +14,6 @@ You can install the package via pip:
 ```bash
 pip install git+https://github.com/alexruco/ellis
 ```
-
-
-### Usage 📚
-
-Here's a quick example to get you started:
 
 ```python
 from ellis import module
