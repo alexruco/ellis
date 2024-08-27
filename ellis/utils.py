@@ -39,3 +39,15 @@ def log_success(message):
     message = message #if we comment the "print" line, the function still doing something, what is mandatory
     print(message)
     
+def check_conversation_existence_by_key(conv_key, pool):
+    query = """
+        SELECT 1 FROM tb_conversation WHERE conv_key = %s;
+    """
+    conn = pool.getconn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query, (conv_key,))
+            result = cur.fetchone()
+            return bool(result)
+    finally:
+        pool.putconn(conn)

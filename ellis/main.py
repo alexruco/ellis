@@ -10,17 +10,18 @@ from conversation_history_handler import (
 )
 from append_messages import append_to_processed_emails
 from get_env import USERNAME, PASSWORD, IMAP_SERVER
-from utils import log_error, log_success
+from utils import log_error, log_success, check_conversation_existence_by_key
+import os
 
-from db_connector import get_db_pool
-from utils import log_error
 
-def store_sent_message(conv_key, sender, recipient, content, sender_type="AI", attachment=None):
-
+def store_sent_message(conv_key, recipient, content, sender=None, sender_type="AI", attachment=None):
+    # Retrieve the default sender from the environment variable USER
+    sender = sender or os.getenv('USERNAME')
+    
     init_db_pool()
 
     pool = get_db_pool()
-    
+
     if not pool:
         log_error("Failed to retrieve the database connection pool.")
         return
@@ -48,19 +49,6 @@ def store_sent_message(conv_key, sender, recipient, content, sender_type="AI", a
     finally:
         pool.putconn(conn)
 
-def check_conversation_existence_by_key(conv_key, pool):
-    query = """
-        SELECT 1 FROM tb_conversation WHERE conv_key = %s;
-    """
-    conn = pool.getconn()
-    try:
-        with conn.cursor() as cur:
-            cur.execute(query, (conv_key,))
-            result = cur.fetchone()
-            return bool(result)
-    finally:
-        pool.putconn(conn)
-
 def get_messages():
     # Initialize DB connection pool
     init_db_pool()
@@ -69,7 +57,7 @@ def get_messages():
     pool = get_db_pool()
     if pool is None:
         log_error("Failed to initialize the database connection pool. Exiting.")
-        return
+        return []
     
     # Step 1: Retrieve emails
     emails_with_hashes = receive_emails(USERNAME, PASSWORD, IMAP_SERVER)
@@ -77,7 +65,7 @@ def get_messages():
 
     if not emails_with_hashes:
         log_success("No emails on the inbox.")
-        return
+        return []
     
     # Step 2: Filter out already processed emails
     unprocessed_emails = filter_unprocessed_emails(emails_with_hashes, pool)
@@ -86,12 +74,16 @@ def get_messages():
     # Step 3: Check if there are any unprocessed emails to process
     if not unprocessed_emails:
         log_success("No new emails to process.")
-        return
+        return []
     
+    processed_messages = []
+
     # Step 4: Process each unprocessed email
     for email_data in unprocessed_emails:
         subject = email_data['email']['subject']
         sender = email_data['email']['from']
+        recipient = email_data['email']['to']
+        body = email_data['email']['body']
         email_hash = email_data['hash']
 
         # Step 5: Extract conversation key from the subject
@@ -110,12 +102,14 @@ def get_messages():
                 append_to_conversation_history(email_data, conversation_key, pool)
                 log_success("Appending conversation to history.")
                 
-                # Step 8: Retrieve and print the conversation history
-                conversation_history = retrieve_conversation_history(conversation_key, pool)
-                if conversation_history:
-                    log_success("Conversation history found and updated.")
-                else:
-                    log_success(f"No history found for key: {conversation_key}.")
+                # Step 8: Store the message details in the processed messages list
+                processed_messages.append({
+                    "conversation_key": conversation_key,
+                    "sender": sender,
+                    "recipient": recipient,
+                    "subject": subject,
+                    "body": body
+                })
             else:
                 log_error(f"No active conversation found for key: {conversation_key} and sender: {sender}.")
         else:
@@ -127,25 +121,17 @@ def get_messages():
 
     # Close DB connections
     close_all_connections()
-    return conversation_history
-
-# Example usage of store_sent_message()
-
-def example_store_sent_message():
-    # Mock data for the sent message
-    conv_key = "abcd1234efgh5670"  # Example conversation key
-    sender = "ai@company.com"  # Example sender email address
-    recipient = "user@example.com"  # Example recipient email address
-    content = "Thank you for reaching out. How can I assist you further?"  # Example message content
-    sender_type = "AI"  # Example sender type (default is "AI")
-    attachment = None  # Example attachment (default is None)
-
-    # Store the sent message in the conversation history
-    store_sent_message(conv_key, sender, recipient, content, sender_type, attachment)
-
-# Call the example function to store a message
+    
+    return processed_messages
 
 if __name__ == "__main__":
-    #get_messages()
+    messages = get_messages()
+    if messages:
+        for message in messages:
+            print(f"Conversation Key: {message['conversation_key']}")
+            print(f"Sender: {message['sender']}")
+            print(f"Recipient: {message['recipient']}")
+            print(f"Subject: {message['subject']}")
+            print(f"Body: {message['body']}")
+            print("\n---\n")
 
-    example_store_sent_message()
