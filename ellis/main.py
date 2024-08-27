@@ -1,5 +1,6 @@
 # main.py
 
+from datetime import datetime
 from josephroulin import receive_emails
 from db_connector import init_db_pool, close_all_connections, get_db_pool
 from conversation_handler import extract_conversation_key, check_conversation_existence, filter_unprocessed_emails
@@ -10,6 +11,55 @@ from conversation_history_handler import (
 from append_messages import append_to_processed_emails
 from get_env import USERNAME, PASSWORD, IMAP_SERVER
 from utils import log_error, log_success
+
+from db_connector import get_db_pool
+from utils import log_error
+
+def store_sent_message(conv_key, sender, recipient, content, sender_type="AI", attachment=None):
+
+    init_db_pool()
+
+    pool = get_db_pool()
+    
+    if not pool:
+        log_error("Failed to retrieve the database connection pool.")
+        return
+
+    # Check if the conversation exists
+    conversation_exists = check_conversation_existence_by_key(conv_key, pool)
+
+    if not conversation_exists:
+        log_error(f"Conversation with key {conv_key} does not exist. Message not stored.")
+        return
+
+    insert_query = """
+        INSERT INTO tb_conversation_history (sender, recipient, sender_type, content, timestamp, attachment, conv_key)
+        VALUES (%s, %s, %s, %s, NOW(), %s, %s);
+    """
+
+    conn = pool.getconn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(insert_query, (sender, recipient, sender_type, content, attachment, conv_key))
+            conn.commit()
+            log_success(f"Message successfully stored for conversation key {conv_key}.")
+    except Exception as e:
+        log_error(f"Error storing message: {str(e)}")
+    finally:
+        pool.putconn(conn)
+
+def check_conversation_existence_by_key(conv_key, pool):
+    query = """
+        SELECT 1 FROM tb_conversation WHERE conv_key = %s;
+    """
+    conn = pool.getconn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query, (conv_key,))
+            result = cur.fetchone()
+            return bool(result)
+    finally:
+        pool.putconn(conn)
 
 def get_messages():
     # Initialize DB connection pool
@@ -79,5 +129,23 @@ def get_messages():
     close_all_connections()
     return conversation_history
 
+# Example usage of store_sent_message()
+
+def example_store_sent_message():
+    # Mock data for the sent message
+    conv_key = "abcd1234efgh5670"  # Example conversation key
+    sender = "ai@company.com"  # Example sender email address
+    recipient = "user@example.com"  # Example recipient email address
+    content = "Thank you for reaching out. How can I assist you further?"  # Example message content
+    sender_type = "AI"  # Example sender type (default is "AI")
+    attachment = None  # Example attachment (default is None)
+
+    # Store the sent message in the conversation history
+    store_sent_message(conv_key, sender, recipient, content, sender_type, attachment)
+
+# Call the example function to store a message
+
 if __name__ == "__main__":
-    get_messages()
+    #get_messages()
+
+    example_store_sent_message()
