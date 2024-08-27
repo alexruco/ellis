@@ -1,8 +1,7 @@
 # conversation_handler.py
 
 from utils import extract_email_address, extract_conversation_key
-from append_messages import append_to_conversation_history
-from conversation_history_handler import retrieve_conversation_history
+from conversation_history_handler import retrieve_conversation_history, append_to_conversation_history
 
 def check_and_process_conversation_key(email, pool):
     sender = extract_email_address(email["email"]["from"])
@@ -74,3 +73,28 @@ def filter_unprocessed_emails(emails_with_hashes, pool):
     unprocessed_emails = [email for email in emails_with_hashes if email["hash"] not in processed_hashes]
 
     return unprocessed_emails
+
+def append_to_processed_emails(email_hash, pool):
+    # Check if the hash already exists
+    check_query = """
+        SELECT 1 FROM tb_processed_emails WHERE email_hash = %s;
+    """
+    insert_query = """
+        INSERT INTO tb_processed_emails (email_hash)
+        VALUES (%s);
+    """
+    conn = pool.getconn()
+    try:
+        with conn.cursor() as cur:
+            # Check if the hash exists
+            cur.execute(check_query, (email_hash,))
+            exists = cur.fetchone()
+
+            if not exists:
+                # If the hash doesn't exist, insert it
+                cur.execute(insert_query, (email_hash,))
+                conn.commit()
+            else:
+                print(f"Email with hash {email_hash} has already been processed.")
+    finally:
+        pool.putconn(conn)

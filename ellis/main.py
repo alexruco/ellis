@@ -3,12 +3,16 @@
 from datetime import datetime
 from josephroulin import receive_emails
 from db_connector import init_db_pool, close_all_connections, get_db_pool
-from conversation_handler import extract_conversation_key, check_conversation_existence, filter_unprocessed_emails
+from conversation_handler import (
+    extract_conversation_key, 
+    check_conversation_existence, 
+    filter_unprocessed_emails, 
+    append_to_processed_emails
+)
 from conversation_history_handler import (
     append_to_conversation_history,
     retrieve_conversation_history
 )
-from append_messages import append_to_processed_emails
 from get_env import USERNAME, PASSWORD, IMAP_SERVER
 from utils import log_error, log_success, check_conversation_existence_by_key
 import os
@@ -49,6 +53,7 @@ def store_sent_message(conv_key, recipient, content, sender=None, sender_type="A
     finally:
         pool.putconn(conn)
 
+
 def get_messages():
     # Initialize DB connection pool
     init_db_pool()
@@ -64,7 +69,7 @@ def get_messages():
     log_success("New emails checked.")   
 
     if not emails_with_hashes:
-        log_success("No emails on the inbox.")
+        log_success("No emails in the inbox.")
         return []
     
     # Step 2: Filter out already processed emails
@@ -108,7 +113,8 @@ def get_messages():
                     "sender": sender,
                     "recipient": recipient,
                     "subject": subject,
-                    "body": body
+                    "body": body,
+                    "email_hash": email_hash
                 })
             else:
                 log_error(f"No active conversation found for key: {conversation_key} and sender: {sender}.")
@@ -133,5 +139,5 @@ if __name__ == "__main__":
             print(f"Recipient: {message['recipient']}")
             print(f"Subject: {message['subject']}")
             print(f"Body: {message['body']}")
+            print(f"Email Hash: {message['email_hash']}")
             print("\n---\n")
-
