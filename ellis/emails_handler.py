@@ -43,18 +43,6 @@ def append_to_processed_emails(email_hash, pool):
     finally:
         pool.putconn(conn)
 
-def encryptor(emails):
-    import hashlib
-    email_hashes = []
-    
-    for email in emails:
-        hash_object = hashlib.sha256()
-        email_data = f"{email['date']}{email['from']}{email['to']}{email['subject']}{email['body']}"
-        hash_object.update(email_data.encode('utf-8'))
-        email_hashes.append(hash_object.hexdigest())
-    
-    return email_hashes
-
 def append_to_conversation_history(email, conv_key, pool):
     """
     Append the email data to the conversation history.
@@ -89,7 +77,7 @@ def append_to_conversation_history(email, conv_key, pool):
             elif model_email and sender_email in model_email:
                 sender_type = "model" #the message is from the model
             else:
-                sender_type = "user" #the message is from user
+                sender_type = "user" #the message is from 
 
             cur.execute(insert_query, (sender, recipient, sender_type, content, timestamp, attachment, conv_key, email_hash))
             conn.commit()

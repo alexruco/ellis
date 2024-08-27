@@ -100,20 +100,3 @@ def get_messages():
 if __name__ == "__main__":
     get_messages()
     
-    '''
-    history = get_history('abcd1234efgh5670')
-    if history:
-        print(history)
-            
-        
-        messages = get_messages()
-            if messages:
-                for message in messages:
-                    print(f"Conversation Key: {message['conversation_key']}")
-                    print(f"Sender: {message['sender']}")
-                    print(f"Recipient: {message['recipient']}")
-                    print(f"Subject: {message['subject']}")
-                    print(f"Body: {message['body']}")
-                    print(f"Email Hash: {message['email_hash']}")
-                    print("\n---\n")
-        '''

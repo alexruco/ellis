@@ -43,6 +43,7 @@ def check_active_conversation_existence(conversation_key, sender, pool):
         AND (
             user_email ILIKE ANY(ARRAY[%s]) 
             OR system_email ILIKE ANY(ARRAY[%s])
+            OR model_email ILIKE ANY(ARRAY[%s])
         ) 
         AND active_service = TRUE;
     """
@@ -52,7 +53,7 @@ def check_active_conversation_existence(conversation_key, sender, pool):
     conn = pool.getconn()
     try:
         with conn.cursor() as cur:
-            cur.execute(query, (conversation_key, emails_to_check, emails_to_check))
+            cur.execute(query, (conversation_key, emails_to_check, emails_to_check, emails_to_check))
             result = cur.fetchone()
             return bool(result)
     finally:
