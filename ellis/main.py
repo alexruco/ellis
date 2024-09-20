@@ -1,4 +1,4 @@
-# main.py
+# ellis/main.py
 
 from josephroulin import receive_emails
 from db_connector import init_db_pool, close_all_connections, get_db_pool
@@ -12,7 +12,7 @@ from emails_handler import (
     filter_unprocessed_emails, 
     append_to_processed_emails,
 )
-from get_env import USERNAME, PASSWORD, IMAP_SERVER
+from get_env import USERNAME, PASSWORD, IMAP_SERVER, DB_USER, DBNAME
 from utils import log_error, log_success
 
 def get_history(conv_key):
@@ -98,5 +98,5 @@ def get_messages():
     return processed_messages
 
 if __name__ == "__main__":
-    get_messages()
+    print(get_history('abcd1234efgh5670'))
     

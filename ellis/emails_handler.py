@@ -2,7 +2,6 @@
 from datetime import datetime
 import re
 
-
 def filter_unprocessed_emails(emails_with_hashes, pool):
     hashes_to_check = [email["hash"] for email in emails_with_hashes]
 

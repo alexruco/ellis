@@ -2,7 +2,7 @@
 
 import psycopg2
 from psycopg2 import pool
-from get_env import DBNAME, USER, DB_PASSWORD, HOST, PORT
+from get_env import DBNAME, DB_USER, DB_PASSWORD, HOST, PORT
 
 # You can use connection pooling for better performance
 connection_pool = None
@@ -11,7 +11,7 @@ def init_db_pool(minconn=1, maxconn=20):
     global connection_pool
     try:
         connection_pool = psycopg2.pool.SimpleConnectionPool(minconn, maxconn,
-                                                             user=USER,
+                                                             user=DB_USER,
                                                              password=DB_PASSWORD,
                                                              host=HOST,
                                                              port=PORT,

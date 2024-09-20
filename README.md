@@ -1,6 +1,8 @@
 # Ellis  🧠
 
-Welcome to **Ellis**! This project is named in honor of Ellis Horowitz, a computer scientist and specialist in the history of computer languages. The module is designed to retrieve messages sent to an email from admin, user and AI, and organize messages in a thread.
+Welcome to **Ellis**! This project is named in honor of Ellis Horowitz, a computer scientist and specialist in the history of computer languages. 
+
+The module is designed to retrieve messages sent to an email from admin, user and AI, and organize messages in a thread.
 
 ## Features ✨
 
@@ -16,13 +18,12 @@ pip install git+https://github.com/alexruco/ellis
 ```
 
 ```python
-from ellis import module
+from ellis import get_messages, get_history
 ```
 # Example usage
 result = module.some_function(5, 10)
 print(result)
 
-L
 
 ## SQL
 
