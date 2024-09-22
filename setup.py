@@ -6,7 +6,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         # Add any external dependencies here
-        'nltk==3.8.1',
+        'nltk>=3.6.7,<3.8.0',
         'requests',
         'python-dotenv',  # For environment variable management
         # 'sqlite3' is built-in and should not be listed here
