@@ -47,4 +47,4 @@ def get_new_messages():
 
 if __name__ == "__main__":
     #get_new_messages()  # Fetch and process incoming emails
-    get_history("john@dee.com")  # Example: Get history for a specific email
+    get_history("alex@ruco.pt")  # Example: Get history for a specific email

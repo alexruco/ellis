@@ -1,6 +1,7 @@
 # conversation_handler_sqlite.py
 
 from db_connector import get_connection
+from utils import extract_email_address  # Import email extraction function
 
 def process_email(email):
     """
@@ -9,8 +10,9 @@ def process_email(email):
     Args:
         email (dict): The email data containing sender, recipient, subject, body, and hash.
     """
-    sender = email["email"]["from"]
-    recipient = email["email"]["to"]
+    # Extract the actual email addresses from the full addresses
+    sender = extract_email_address(email["email"]["from"])
+    recipient = extract_email_address(email["email"]["to"])
     subject = email["email"]["subject"]
     body = email["email"]["body"]
     email_hash = email["hash"]
@@ -26,7 +28,7 @@ def process_email(email):
         ON CONFLICT(email_hash) DO NOTHING
     '''
     
-    # Execute the insertion query
+    # Execute the insertion query with the extracted email addresses
     c.execute(insert_query, (sender, recipient, subject, body, email_hash))
     
     # Commit the changes
