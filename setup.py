@@ -1,4 +1,3 @@
-# setup.py
 from setuptools import setup, find_packages
 
 setup(
@@ -7,11 +6,10 @@ setup(
     packages=find_packages(),
     install_requires=[
         # Add any external dependencies here
-        nltk==3.8.1
-        requests
-        python-dotenv  # For environment variable management
-        sqlite3  # Built-in, but listed for clarity
-
+        'nltk==3.8.1',
+        'requests',
+        'python-dotenv',  # For environment variable management
+        # 'sqlite3' is built-in and should not be listed here
     ],
     entry_points={
         'console_scripts': [
@@ -23,4 +21,10 @@ setup(
     author='Alex Ruco',
     author_email='alex@ruco.pt',
     url='https://github.com/alexruco/ellis',  # Replace with your repo URL
+    classifiers=[
+        'Programming Language :: Python :: 3',
+        'License :: OSI Approved :: MIT License',  # Replace with your license
+        'Operating System :: OS Independent',
+    ],
+    python_requires='>=3.6',
 )
