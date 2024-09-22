@@ -1,0 +1,26 @@
+# setup.py
+from setuptools import setup, find_packages
+
+setup(
+    name='ellis',  # This will be the name of your package
+    version='0.1',
+    packages=find_packages(),
+    install_requires=[
+        # Add any external dependencies here
+        nltk==3.8.1
+        requests
+        python-dotenv  # For environment variable management
+        sqlite3  # Built-in, but listed for clarity
+
+    ],
+    entry_points={
+        'console_scripts': [
+            'ellis-get-history=ellis.main:get_history',
+            'ellis-get-messages=ellis.main:get_new_messages',
+        ]
+    },
+    description='A package to handle new emails and retrieve history',
+    author='Alex Ruco',
+    author_email='alex@ruco.pt',
+    url='https://github.com/alexruco/ellis',  # Replace with your repo URL
+)

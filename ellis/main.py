@@ -27,7 +27,7 @@ def get_history(email_address):
     else:
         print(f"No email history found for {email_address}.")
 
-def get_incoming_messages():
+def get_new_messages():
     """
     Fetches incoming emails from the email server and processes them.
     """
@@ -46,5 +46,5 @@ def get_incoming_messages():
         print(f"Error while fetching emails: {str(e)}")
 
 if __name__ == "__main__":
-    #get_incoming_messages()  # Fetch and process incoming emails
-    get_history("alex@ruco.pt")  # Example: Get history for a specific email
+    #get_new_messages()  # Fetch and process incoming emails
+    get_history("john@dee.com")  # Example: Get history for a specific email
