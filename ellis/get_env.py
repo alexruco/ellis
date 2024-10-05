@@ -1,29 +1,31 @@
-# get_env.py
+# ellis/get_env.py
 
 import os
-from dotenv import load_dotenv
 
-# Optionally clear existing environment variables
-def clear_env_vars(*args):
-    for var in args:
-        os.environ.pop(var, None)
+def get_env_variable(var_name):
+    """
+    Fetches the specified environment variable.
+    
+    Args:
+        var_name (str): The name of the environment variable.
+        
+    Returns:
+        str: The value of the environment variable.
+        
+    Raises:
+        EnvironmentError: If the variable is not set.
+    """
+    value = os.getenv(var_name)
+    if not value:
+        raise EnvironmentError(f"Please ensure {var_name} is set in your environment.")
+    return value
 
-# Clear specified environment variables before loading new values
-clear_env_vars("EMAIL_USERNAME", "EMAIL_PASSWORD", "IMAP_SERVER")
+# Access environment variables dynamically when needed
+USERNAME = get_env_variable("EMAIL_USERNAME")
+PASSWORD = get_env_variable("EMAIL_PASSWORD")
+IMAP_SERVER = get_env_variable("IMAP_SERVER")
 
-# Load environment variables from a .env file (optional)
-load_dotenv()
-
-# Fetch the credentials and IMAP server from environment variables
-USERNAME = os.getenv("EMAIL_USERNAME")
-PASSWORD = os.getenv("EMAIL_PASSWORD")
-IMAP_SERVER = os.getenv("IMAP_SERVER")
-
-# Optionally set new values manually (you can omit this if you're using a .env file)
-os.environ["EMAIL_USERNAME"] = "your_username_here"
-os.environ["EMAIL_PASSWORD"] = "your_password_here"
-os.environ["IMAP_SERVER"] = "imap.yourserver.com"
-
-# You can include defaults or raise errors if any variable is missing
-if not USERNAME or not PASSWORD or not IMAP_SERVER:
-    raise EnvironmentError("Please ensure EMAIL_USERNAME, EMAIL_PASSWORD, and IMAP_SERVER are set in your environment.")
+# Optional debugging (remove in production)
+print(f"Ellis: Loaded EMAIL_USERNAME: {USERNAME}")
+print(f"Ellis: Loaded EMAIL_PASSWORD: {PASSWORD}")
+print(f"Ellis: Loaded IMAP_SERVER: {IMAP_SERVER}")
