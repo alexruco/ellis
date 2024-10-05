@@ -1,8 +1,8 @@
 # emails_handler_sqlite.py
 
-from db_connector import get_connection
-from utils import extract_email_address, generate_email_hash, is_valid_email
-from conversation_handler import process_email  # Ensure process_email is imported
+from ellis.db_connector import get_connection
+from ellis.utils import extract_email_address, generate_email_hash, is_valid_email
+from ellis.conversation_handler import process_email
 
 def handle_incoming_email(email_data):
     """

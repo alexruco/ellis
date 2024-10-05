@@ -1,8 +1,9 @@
 # main.py
 
-from db_connector import init_db
-from emails_handler import handle_incoming_email
-from conversation_handler import search_email_history
+from ellis.db_connector import init_db
+from ellis.emails_handler import handle_incoming_email
+from ellis.conversation_handler import search_email_history
+
 from josephroulin import receive_emails  # Import the email retrieval function
 from get_env import USERNAME, PASSWORD, IMAP_SERVER  # Import credentials and server info
 

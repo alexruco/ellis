@@ -1,7 +1,7 @@
 # conversation_handler_sqlite.py
 
-from db_connector import get_connection
-from utils import extract_email_address  # Import email extraction function
+from ellis.db_connector import get_connection
+from ellis.utils import extract_email_address
 
 def process_email(email):
     """
