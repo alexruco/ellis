@@ -1,4 +1,4 @@
-# emails_handler_sqlite.py
+# ellis/emails_handler.py
 
 from ellis.db_connector import get_connection
 from ellis.utils import extract_email_address, generate_email_hash, is_valid_email

@@ -1,7 +1,7 @@
 # ellis/main.py
 
 from ellis.db_connector import init_db
-from ellis.emails_handler import handle_incoming_email
+from ellis.emails_handler import handle_incoming_email, filter_unprocessed_emails
 from ellis.conversation_handler import search_email_history
 
 from josephroulin import receive_emails  
@@ -35,7 +35,10 @@ def get_history(email_address):
 
 def get_new_messages():
     """
-    Fetches incoming emails from the email server and processes them.
+    Fetches incoming emails from the email server, filters out processed emails, and processes them.
+    
+    Returns:
+        int: The number of new (unprocessed) emails that were successfully processed.
     """
     # Ensure the database is initialized
     init_db()
@@ -45,19 +48,21 @@ def get_new_messages():
     password = get_password()
     imap_server = get_imap_server()
 
-    # Step 2: Print for verification (optional)
-    #print(f"Using EMAIL_USERNAME: {username}, EMAIL_PASSWORD: {password}, IMAP_SERVER: {imap_server}")
-
-    # Step 3: Fetch emails from the email server using the receive_emails function
+    # Step 2: Retrieve emails from the server
     try:
         email_data_list = receive_emails(username, password, imap_server)
-        # Step 4: Process each email
-        total_email_retrieven = 0
-        for email_data in email_data_list:
-            handle_incoming_email(email_data)
-            total_email_retrieven = total_email_retrieven +1
-        emails_retrieven = f"{total_email_retrieven} email(s)"
-    except Exception as e:
-        print(f"Error while fetching emails: {str(e)}")
         
-    return emails_retrieven
+        # Step 3: Filter out emails that have already been processed
+        unprocessed_emails = filter_unprocessed_emails(email_data_list)
+        
+        # Step 4: Process each unprocessed email
+        for email_data in unprocessed_emails:
+            handle_incoming_email(email_data)
+
+        # Step 5: Return the number of new emails processed
+        return len(unprocessed_emails)
+
+    except Exception as e:
+        # If there's an error, return 0 or handle the error accordingly
+        print(f"Error while fetching emails: {str(e)}")
+        return 0
