@@ -1,5 +1,5 @@
 # ellis/emails_handler.py
-from ellis.utils import extract_email_address, generate_email_hash, is_valid_email
+from ellis.utils import extract_email_address, generate_email_hash, is_valid_email, normalize_hash
 from ellis.conversation_handler import process_email
 import os
 from ellis.db_connector import get_connection
