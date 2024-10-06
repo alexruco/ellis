@@ -1,10 +1,8 @@
-# ellis/get_env.py
-
 import os
 
 def get_env_variable(var_name):
     """
-    Fetches the specified environment variable.
+    Fetches the specified environment variable dynamically.
     
     Args:
         var_name (str): The name of the environment variable.
@@ -20,12 +18,12 @@ def get_env_variable(var_name):
         raise EnvironmentError(f"Please ensure {var_name} is set in your environment.")
     return value
 
-# Access environment variables dynamically when needed
-USERNAME = get_env_variable("EMAIL_USERNAME")
-PASSWORD = get_env_variable("EMAIL_PASSWORD")
-IMAP_SERVER = get_env_variable("IMAP_SERVER")
+# Dynamic functions to access environment variables
+def get_username():
+    return get_env_variable("EMAIL_USERNAME")
 
-# Optional debugging (remove in production)
-print(f"Ellis: Loaded EMAIL_USERNAME: {USERNAME}")
-print(f"Ellis: Loaded EMAIL_PASSWORD: {PASSWORD}")
-print(f"Ellis: Loaded IMAP_SERVER: {IMAP_SERVER}")
+def get_password():
+    return get_env_variable("EMAIL_PASSWORD")
+
+def get_imap_server():
+    return get_env_variable("IMAP_SERVER")

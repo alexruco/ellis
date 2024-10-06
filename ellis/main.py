@@ -1,11 +1,11 @@
-# main.py
+# ellis/main.py
 
 from ellis.db_connector import init_db
 from ellis.emails_handler import handle_incoming_email
 from ellis.conversation_handler import search_email_history
 
 from josephroulin import receive_emails  # Import the email retrieval function
-from ellis.get_env import USERNAME, PASSWORD, IMAP_SERVER  # Import credentials and server info
+from ellis.get_env import get_username, get_password, get_imap_server  # Use getter functions for dynamic variable fetching
 
 def get_history(email_address):
     """
@@ -35,11 +35,18 @@ def get_new_messages():
     # Ensure the database is initialized
     init_db()
 
-    # Step 2: Fetch emails from the email server using the receive_emails function
+    # Step 1: Dynamically fetch the environment variables using getter functions
+    username = get_username()
+    password = get_password()
+    imap_server = get_imap_server()
+
+    # Step 2: Print for verification (optional)
+    print(f"Using EMAIL_USERNAME: {username}, EMAIL_PASSWORD: {password}, IMAP_SERVER: {imap_server}")
+
+    # Step 3: Fetch emails from the email server using the receive_emails function
     try:
-        print(USERNAME, PASSWORD, IMAP_SERVER)
-        email_data_list = receive_emails(USERNAME, PASSWORD, IMAP_SERVER)
-        # Step 3: Process each email
+        email_data_list = receive_emails(username, password, imap_server)
+        # Step 4: Process each email
         for email_data in email_data_list:
             handle_incoming_email(email_data)
 
@@ -47,5 +54,8 @@ def get_new_messages():
         print(f"Error while fetching emails: {str(e)}")
 
 if __name__ == "__main__":
-    #get_new_messages()  # Fetch and process incoming emails
-    get_history("alex@ruco.pt")  # Example: Get history for a specific email
+    # Uncomment to fetch and process incoming emails
+    # get_new_messages()
+    
+    # Example: Get history for a specific email
+    get_history("alex@ruco.pt")
