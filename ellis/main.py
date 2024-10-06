@@ -4,8 +4,8 @@ from ellis.db_connector import init_db
 from ellis.emails_handler import handle_incoming_email
 from ellis.conversation_handler import search_email_history
 
-from josephroulin import receive_emails  # Import the email retrieval function
-from ellis.get_env import get_username, get_password, get_imap_server  # Use getter functions for dynamic variable fetching
+from josephroulin import receive_emails  
+from ellis.get_env import get_username, get_password, get_imap_server  
 
 def get_history(email_address):
     """
@@ -33,7 +33,6 @@ def get_history(email_address):
 
     return formatted_history
 
-
 def get_new_messages():
     """
     Fetches incoming emails from the email server and processes them.
@@ -58,16 +57,7 @@ def get_new_messages():
             handle_incoming_email(email_data)
             total_email_retrieven = total_email_retrieven +1
         emails_retrieven = f"{total_email_retrieven} email(s)"
-        print(f'emails_retrieven:{emails_retrieven}')
     except Exception as e:
         print(f"Error while fetching emails: {str(e)}")
         
     return emails_retrieven
-
-#if __name__ == "__main__":
-    # Uncomment to fetch and process incoming emails
-    # get_new_messages()
-    
-    # Example: Get history for a specific email
-    #history = get_history("alex@ruco.pt")
-    #print(history)  # Display the formatted email history
