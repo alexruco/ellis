@@ -50,6 +50,7 @@ def filter_unprocessed_emails(emails_with_hashes):
         # Filter out processed emails based on the first 6 characters of their hash
         unprocessed_emails = [
             email for email in emails_with_hashes
+            print(f'normalize_hash(email["hash"])[:6]:'{normalize_hash(email["hash"])[:6]})
             if normalize_hash(email["hash"])[:6] not in stored_hashes_set
         ]
 
