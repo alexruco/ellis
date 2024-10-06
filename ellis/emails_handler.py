@@ -16,7 +16,7 @@ def filter_unprocessed_emails(emails_with_hashes):
     """
     # Use the hashes provided by Joseph Roulin
     hashes_to_check = [email["hash"] for email in emails_with_hashes]
-    print(f"Hashes recém-gerados: {hashes_to_check}")
+    #print(f"Hashes recém-gerados: {hashes_to_check}")
 
     if not hashes_to_check:
         return []
@@ -30,17 +30,17 @@ def filter_unprocessed_emails(emails_with_hashes):
         # Retrieve stored hashes from the database
         c.execute("SELECT email_hash FROM processed_emails")
         rows = c.fetchall()
-        print(f"Número de hashes recuperados do banco de dados: {len(rows)}")
+        #print(f"Número de hashes recuperados do banco de dados: {len(rows)}")
 
         # Extract the stored hashes
         stored_hashes = [row[0] for row in rows if row[0] is not None]
-        print(f"Hashes armazenados: {stored_hashes}")
+        #print(f"Hashes armazenados: {stored_hashes}")
 
         stored_hashes_set = set(stored_hashes)
 
         # Identify hashes that have already been processed
         processed_hashes = [h for h in hashes_to_check if h in stored_hashes_set]
-        print(f"Hashes que já existem no banco: {processed_hashes}")
+        #print(f"Hashes que já existem no banco: {processed_hashes}")
 
         # Filter out emails whose hashes are already in the database
         unprocessed_emails = [
@@ -48,7 +48,7 @@ def filter_unprocessed_emails(emails_with_hashes):
             if email["hash"] not in stored_hashes_set
         ]
 
-        print(f"Hashes dos emails que serão processados: {[email['hash'] for email in unprocessed_emails]}")
+        #print(f"Hashes dos emails que serão processados: {[email['hash'] for email in unprocessed_emails]}")
 
     except Exception as e:
         print(f"Ocorreu um erro ao processar os hashes: {e}")
@@ -81,7 +81,7 @@ def handle_incoming_email(email_data):
 
         # Process the email (store in DB and mark as processed)
         process_email(email_data)
-        print(f"Email from {sender} processed successfully.")
+        #print(f"Email from {sender} processed successfully.")
 
     else:
         print(f"Invalid sender or recipient email address: {sender_full} or {recipient_full}")
