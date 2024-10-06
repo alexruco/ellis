@@ -15,8 +15,8 @@ def filter_unprocessed_emails(emails_with_hashes):
         list of dict: List of unprocessed emails.
     """
     # Use the hashes provided by Joseph Roulin, taking the first 6 characters if needed
-    hashes_to_check = [email["hash"][:6] for email in emails_with_hashes]
-    print(f"Hashes recém-gerados (primeiros 6 caracteres): {hashes_to_check}")
+    hashes_to_check = [email["hash"] for email in emails_with_hashes]
+    print(f"Hashes recém-gerados: {hashes_to_check}")
 
     if not hashes_to_check:
         return []
@@ -33,19 +33,19 @@ def filter_unprocessed_emails(emails_with_hashes):
         print(f"Número de hashes recuperados do banco de dados: {len(rows)}")
 
         # Normalize and take the first 6 characters of the stored hashes
-        stored_hashes = [row[0][:6] for row in rows if row[0] is not None]
-        print(f"Hashes armazenados (primeiros 6 caracteres): {stored_hashes}")
+        stored_hashes = [row[0] for row in rows if row[0] is not None]
+        print(f"Hashes armazenados: {stored_hashes}")
 
         stored_hashes_set = set(stored_hashes)
 
         # Identify hashes that have already been processed
         processed_hashes = [h for h in hashes_to_check if h in stored_hashes_set]
-        print(f"Hashes que já existem no banco (primeiros 6 caracteres): {processed_hashes}")
+        print(f"Hashes que já existem no banco: {processed_hashes}")
 
         # Filter out emails whose hashes are already in the database
         unprocessed_emails = [
             email for email in emails_with_hashes
-            if email["hash"][:6] not in stored_hashes_set
+            if email["hash"] not in stored_hashes_set
         ]
 
         print(f"Hashes dos emails que serão processados: {[email['hash'] for email in unprocessed_emails]}")
