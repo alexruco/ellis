@@ -58,10 +58,11 @@ def get_new_messages():
             handle_incoming_email(email_data)
             total_email_retrieven = total_email_retrieven +1
         emails_retrieven = f"{total_email_retrieven} email(s)"
+        print(f'emails_retrieven:{emails_retrieven}')
     except Exception as e:
         print(f"Error while fetching emails: {str(e)}")
         
-        return emails_retrieven
+    return emails_retrieven
 
 #if __name__ == "__main__":
     # Uncomment to fetch and process incoming emails
