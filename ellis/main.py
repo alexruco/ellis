@@ -57,16 +57,16 @@ def get_new_messages():
         for email_data in email_data_list:
             handle_incoming_email(email_data)
             total_email_retrieven = total_email_retrieven +1
-
+        emails_retrieven = f"{total_email_retrieven} email(s)"
     except Exception as e:
         print(f"Error while fetching emails: {str(e)}")
         
-        return total_email_retrieven
+        return emails_retrieven
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
     # Uncomment to fetch and process incoming emails
     # get_new_messages()
     
     # Example: Get history for a specific email
-    history = get_history("alex@ruco.pt")
-    print(history)  # Display the formatted email history
+    #history = get_history("alex@ruco.pt")
+    #print(history)  # Display the formatted email history

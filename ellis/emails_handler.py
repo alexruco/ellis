@@ -20,7 +20,7 @@ def handle_incoming_email(email_data):
     recipient = extract_email_address(recipient_full)
 
     # Log the sender and recipient to troubleshoot the issue
-    print(f"Processing email from {sender} to {recipient}")
+    #print(f"Processing email from {sender} to {recipient}")
 
     # Validate the sender and recipient emails
     if is_valid_email(sender) and is_valid_email(recipient):
