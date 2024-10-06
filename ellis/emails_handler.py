@@ -36,45 +36,47 @@ def handle_incoming_email(email_data):
 
 def filter_unprocessed_emails(emails_with_hashes):
     """
-    Filters out emails that have already been processed based on their hash.
+    Filtra os emails que já foram processados com base no hash.
 
     Args:
-        emails_with_hashes (list of dict): List of emails where each email contains a 'hash' key.
+        emails_with_hashes (list of dict): Lista de emails, cada um contendo uma chave 'hash'.
 
     Returns:
-        list of dict: List of unprocessed emails.
+        list of dict: Lista de emails não processados.
     """
-    # Extract hashes from incoming emails
+    # Extrair os hashes dos emails recebidos
     hashes_to_check = [email["hash"] for email in emails_with_hashes]
-    print(f"Newly generated hashes: {hashes_to_check}")
+    print(f"Hashes recém-gerados: {hashes_to_check}")
 
+    # Se não há hashes para verificar, retorne a lista vazia
     if not hashes_to_check:
         return []
 
-    # Connect to the SQLite DB
+    # Conectar ao banco de dados
     conn = get_connection()
     c = conn.cursor()
 
-    # Debug: Print all existing hashes in the database before comparison
+    # Recuperar todos os hashes armazenados no banco de dados
     c.execute("SELECT email_hash FROM processed_emails")
-    all_stored_hashes = [row[0] for row in c.fetchall()]
-    print(f"All stored hashes in database: {all_stored_hashes}")
+    stored_hashes = [row[0] for row in c.fetchall()]
 
-    # Query to check if the email hash exists in the processed_emails table
-    query = f'SELECT email_hash FROM processed_emails WHERE email_hash IN ({",".join("?" * len(hashes_to_check))})'
-    c.execute(query, hashes_to_check)
-    processed_hashes = [row[0] for row in c.fetchall()]
+    # Debug: Imprimir detalhes das hashes armazenadas
+    print(f"Hashes armazenados no banco: {stored_hashes}")
+    print(f"Detalhes das hashes armazenadas: {[{'hash': h, 'length': len(h), 'type': type(h)} for h in stored_hashes]}")
 
-    # Print the hashes found in the database for comparison
-    print(f"Existing hashes in database matching incoming hashes: {processed_hashes}")
+    # Debug: Imprimir detalhes das hashes a serem comparadas
+    print(f"Detalhes das hashes recém-geradas: {[{'hash': h, 'length': len(h), 'type': type(h)} for h in hashes_to_check]}")
 
-    conn.close()
+    # Comparação direta das hashes
+    processed_hashes = [h for h in hashes_to_check if h in stored_hashes]
 
-    # Filter out emails whose hash is in the processed_hashes list
+    # Imprimir os hashes que já foram processados
+    print(f"Hashes que já existem no banco: {processed_hashes}")
+
+    # Filtrar os emails cujos hashes não estão na lista de hashes já processados
     unprocessed_emails = [email for email in emails_with_hashes if email["hash"] not in processed_hashes]
 
-    # Print the hashes of unprocessed emails
-    unprocessed_hashes = [email["hash"] for email in unprocessed_emails]
-    print(f"Hashes of emails to be processed: {unprocessed_hashes}")
+    # Imprimir os hashes dos emails que serão processados
+    print(f"Hashes dos emails que serão processados: {[email['hash'] for email in unprocessed_emails]}")
 
     return unprocessed_emails
