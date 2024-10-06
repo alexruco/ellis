@@ -1,5 +1,5 @@
 # ellis/emails_handler.py
-from ellis.utils import extract_email_address, generate_email_hash, is_valid_email, normalize_hash
+from ellis.utils import extract_email_address, is_valid_email
 from ellis.conversation_handler import process_email
 import os
 from ellis.db_connector import get_connection
@@ -14,7 +14,7 @@ def filter_unprocessed_emails(emails_with_hashes):
     Returns:
         list of dict: List of unprocessed emails.
     """
-    # Use the hashes provided by Joseph Roulin, taking the first 6 characters if needed
+    # Use the hashes provided by Joseph Roulin
     hashes_to_check = [email["hash"] for email in emails_with_hashes]
     print(f"Hashes recém-gerados: {hashes_to_check}")
 
@@ -27,12 +27,12 @@ def filter_unprocessed_emails(emails_with_hashes):
     c = conn.cursor()
 
     try:
-        # Retrieve stored hashes from the database, which should be the Joseph Roulin hashes
+        # Retrieve stored hashes from the database
         c.execute("SELECT email_hash FROM processed_emails")
         rows = c.fetchall()
         print(f"Número de hashes recuperados do banco de dados: {len(rows)}")
 
-        # Normalize and take the first 6 characters of the stored hashes
+        # Extract the stored hashes
         stored_hashes = [row[0] for row in rows if row[0] is not None]
         print(f"Hashes armazenados: {stored_hashes}")
 
@@ -74,14 +74,10 @@ def handle_incoming_email(email_data):
     sender = extract_email_address(sender_full)
     recipient = extract_email_address(recipient_full)
 
-    # Log the sender and recipient to troubleshoot the issue
-    #print(f"Processing email from {sender} to {recipient}")
-
     # Validate the sender and recipient emails
     if is_valid_email(sender) and is_valid_email(recipient):
-        # Generate a unique hash for the email
-        email_data["hash"] = email_data["email"]["hash"]
-        #generate_email_hash(email_data)
+        # Use the existing hash provided by Joseph Roulin
+        # No need to generate a new hash here
 
         # Process the email (store in DB and mark as processed)
         process_email(email_data)
