@@ -44,7 +44,9 @@ def filter_unprocessed_emails(emails_with_hashes):
     Returns:
         list of dict: List of unprocessed emails.
     """
+    # Extract hashes from incoming emails
     hashes_to_check = [email["hash"] for email in emails_with_hashes]
+    print(f"Newly generated hashes: {hashes_to_check}")
 
     if not hashes_to_check:
         return []
@@ -53,14 +55,26 @@ def filter_unprocessed_emails(emails_with_hashes):
     conn = get_connection()
     c = conn.cursor()
 
+    # Debug: Print all existing hashes in the database before comparison
+    c.execute("SELECT email_hash FROM processed_emails")
+    all_stored_hashes = [row[0] for row in c.fetchall()]
+    print(f"All stored hashes in database: {all_stored_hashes}")
+
     # Query to check if the email hash exists in the processed_emails table
     query = f'SELECT email_hash FROM processed_emails WHERE email_hash IN ({",".join("?" * len(hashes_to_check))})'
     c.execute(query, hashes_to_check)
     processed_hashes = [row[0] for row in c.fetchall()]
 
+    # Print the hashes found in the database for comparison
+    print(f"Existing hashes in database matching incoming hashes: {processed_hashes}")
+
     conn.close()
 
     # Filter out emails whose hash is in the processed_hashes list
     unprocessed_emails = [email for email in emails_with_hashes if email["hash"] not in processed_hashes]
+
+    # Print the hashes of unprocessed emails
+    unprocessed_hashes = [email["hash"] for email in unprocessed_emails]
+    print(f"Hashes of emails to be processed: {unprocessed_hashes}")
 
     return unprocessed_emails

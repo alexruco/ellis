@@ -40,6 +40,7 @@ def process_email(email):
     conn.commit()
 
     # Mark the email as processed by adding its hash to the processed_emails table
+    print(f"Storing hash in processed_emails table: {email_hash}")
     append_to_processed_emails(email_hash)
 
     # Close the database connection
