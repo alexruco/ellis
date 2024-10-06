@@ -10,13 +10,13 @@ def normalize_hash(hash_value):
 
 def filter_unprocessed_emails(emails_with_hashes):
     """
-    Filtra os emails que já foram processados com base no hash.
+    Filters out emails that have already been processed based on their hash.
 
     Args:
-        emails_with_hashes (list of dict): Lista de emails, cada um contendo uma chave 'hash'.
+        emails_with_hashes (list of dict): List of emails, each containing a 'hash' key.
 
     Returns:
-        list de dict: Lista de emails não processados.
+        list of dict: List of unprocessed emails.
     """
     hashes_to_check = [normalize_hash(email["hash"]) for email in emails_with_hashes]
     print(f"Hashes recém-gerados: {hashes_to_check}")
@@ -24,38 +24,25 @@ def filter_unprocessed_emails(emails_with_hashes):
     if not hashes_to_check:
         return []
 
-    # Conectar ao banco de dados correto e verificar o caminho
     conn = get_connection()
     print(f"Conectado ao banco de dados: {os.path.abspath('instance.db')}")
     c = conn.cursor()
 
-    # Recuperar todos os hashes armazenados no banco de dados
+    # Retrieve all stored hashes, already normalized
     c.execute("SELECT email_hash FROM processed_emails")
-    stored_hashes = [normalize_hash(row[0]) for row in c.fetchall()]
+    stored_hashes = [row[0] for row in c.fetchall()]
 
-    # Debug: Imprimir detalhes das hashes armazenadas
-    print(f"Hashes armazenados no banco (normalizados): {stored_hashes}")
-    print(f"Detalhes das hashes armazenadas: {[{'hash': h, 'length': len(h), 'type': type(h)} for h in stored_hashes]}")
+    # Using set for faster lookup
+    stored_hashes_set = set(stored_hashes)
 
-    # Debug: Comparar manualmente cada hash para ver porque não há correspondências
-    print("Comparando hashes manualmente:")
-    for new_hash in hashes_to_check:
-        for stored_hash in stored_hashes:
-            if new_hash == stored_hash:
-                print(f"Match encontrado! {new_hash} == {stored_hash}")
-            else:
-                print(f"Sem correspondência: {new_hash} != {stored_hash}")
+    # Identify processed hashes
+    processed_hashes = [h for h in hashes_to_check if h in stored_hashes_set]
 
-    # Comparação direta das hashes normalizadas
-    processed_hashes = [h for h in hashes_to_check if h in stored_hashes]
-
-    # Imprimir os hashes que já foram processados
     print(f"Hashes que já existem no banco: {processed_hashes}")
 
-    # Filtrar os emails cujos hashes não estão na lista de hashes já processados
-    unprocessed_emails = [email for email in emails_with_hashes if normalize_hash(email["hash"]) not in processed_hashes]
+    # Filter out processed emails
+    unprocessed_emails = [email for email in emails_with_hashes if normalize_hash(email["hash"]) not in stored_hashes_set]
 
-    # Imprimir os hashes dos emails que serão processados
     print(f"Hashes dos emails que serão processados: {[email['hash'] for email in unprocessed_emails]}")
 
     conn.close()

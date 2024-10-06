@@ -3,9 +3,6 @@
 from ellis.db_connector import get_connection
 from ellis.utils import extract_email_address
 
-# ellis/conversation_handler.py
-
-from ellis.db_connector import get_connection
 
 def process_email(email):
     """
@@ -14,37 +11,44 @@ def process_email(email):
     Args:
         email (dict): The email data containing sender, recipient, subject, body, and hash.
     """
-    # Extract necessary fields
     sender = email["email"]["from"]
     recipient = email["email"]["to"]
     subject = email["email"]["subject"]
     body = email["email"]["body"]
     email_hash = email["hash"]
 
-    # Print the hash of the email being processed
     print(f"Processing email with hash: {email_hash}")
 
-    # Connect to the SQLite database
     conn = get_connection()
     c = conn.cursor()
 
-    # Insert the email details into the emails table, avoid duplicate entries with the same hash
-    insert_query = '''
-        INSERT INTO emails (sender, recipient, subject, body, email_hash)
-        VALUES (?, ?, ?, ?, ?)
-        ON CONFLICT(email_hash) DO NOTHING
-    '''
-    c.execute(insert_query, (sender, recipient, subject, body, email_hash))
-    
-    # Commit the changes
-    conn.commit()
+    try:
+        # Begin transaction
+        conn.execute('BEGIN')
 
-    # Mark the email as processed by adding its hash to the processed_emails table
-    print(f"Storing hash in processed_emails table: {email_hash}")
-    append_to_processed_emails(email_hash)
+        # Insert into emails table
+        insert_email_query = '''
+            INSERT INTO emails (sender, recipient, subject, body, email_hash)
+            VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT(email_hash) DO NOTHING
+        '''
+        c.execute(insert_email_query, (sender, recipient, subject, body, email_hash))
 
-    # Close the database connection
-    conn.close()
+        # Insert into processed_emails table
+        insert_processed_query = 'INSERT OR IGNORE INTO processed_emails (email_hash) VALUES (?)'
+        c.execute(insert_processed_query, (email_hash,))
+
+        # Commit transaction
+        conn.commit()
+
+        print(f"Email with hash {email_hash} processed and marked as processed.")
+
+    except Exception as e:
+        conn.rollback()
+        print(f"Error processing email with hash {email_hash}: {str(e)}")
+
+    finally:
+        conn.close()
 
 def append_to_processed_emails(email_hash):
     """

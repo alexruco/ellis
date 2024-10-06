@@ -36,15 +36,21 @@ def is_valid_email(email_address):
 def generate_email_hash(email):
     """
     Generates a unique hash for an email based on its content.
-    
+
     Args:
         email (dict): The email data containing sender, recipient, subject, and body.
-    
+
     Returns:
-        str: A unique hash string for the email.
+        str: A unique, normalized hash string for the email.
     """
-    email_data = f"{email['email']['from']}-{email['email']['to']}-{email['email']['subject']}-{email['email']['body']}"
-    return hashlib.sha256(email_data.encode('utf-8')).hexdigest()
+    sender = sanitize_text(email['email'].get('from', ''))
+    recipient = sanitize_text(email['email'].get('to', ''))
+    subject = sanitize_text(email['email'].get('subject', ''))
+    body = sanitize_text(email['email'].get('body', ''))
+    
+    email_data = f"{sender}-{recipient}-{subject}-{body}"
+    raw_hash = hashlib.sha256(email_data.encode('utf-8')).hexdigest()
+    return normalize_hash(raw_hash)
 
 def sanitize_text(text):
     """
