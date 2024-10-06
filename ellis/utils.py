@@ -3,6 +3,10 @@
 import hashlib
 import re
 
+def normalize_hash(hash_value):
+    """Normaliza um hash removendo espaços e aplicando lower-case."""
+    return hash_value.strip().lower()
+
 def extract_email_address(full_address):
     """
     Extracts the actual email address from a full address string.

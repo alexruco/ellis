@@ -4,9 +4,6 @@ from ellis.conversation_handler import process_email
 import os
 from ellis.db_connector import get_connection
 
-def normalize_hash(hash_value):
-    """Normaliza um hash removendo espaços e aplicando lower-case."""
-    return hash_value.strip().lower()
 
 def filter_unprocessed_emails(emails_with_hashes):
     """
