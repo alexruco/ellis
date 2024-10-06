@@ -25,7 +25,7 @@ def init_db():
             recipient TEXT NOT NULL,
             subject TEXT,
             body TEXT,
-            email_hash VARCHAR(64) UNIQUE NOT NULL
+            email_hash VARCHAR(128) UNIQUE NOT NULL
         )
     ''')
 
