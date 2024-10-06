@@ -7,7 +7,7 @@ from ellis.db_connector import get_connection
 
 def filter_unprocessed_emails(emails_with_hashes):
     """
-    Filters out emails that have already been processed based on their hash.
+    Filters out emails that have not been processed based on the first 6 characters of their hash.
 
     Args:
         emails_with_hashes (list of dict): List of emails, each containing a 'hash' key.
@@ -15,8 +15,9 @@ def filter_unprocessed_emails(emails_with_hashes):
     Returns:
         list of dict: List of unprocessed emails.
     """
-    hashes_to_check = [normalize_hash(email["hash"]) for email in emails_with_hashes]
-    print(f"Hashes recém-gerados: {hashes_to_check}")
+    # Get the first 6 characters of the normalized hashes
+    hashes_to_check = [normalize_hash(email["hash"])[:6] for email in emails_with_hashes]
+    print(f"Hashes recém-gerados (primeiros 6 caracteres): {hashes_to_check}")
 
     if not hashes_to_check:
         return []
@@ -25,20 +26,23 @@ def filter_unprocessed_emails(emails_with_hashes):
     print(f"Conectado ao banco de dados: {os.path.abspath('instance.db')}")
     c = conn.cursor()
 
-    # Retrieve all stored hashes, already normalized
+    # Retrieve all stored hashes, normalize them, and take the first 6 characters
     c.execute("SELECT email_hash FROM processed_emails")
-    stored_hashes = [row[0] for row in c.fetchall()]
+    stored_hashes = [normalize_hash(row[0])[:6] for row in c.fetchall()]
 
-    # Using set for faster lookup
+    # Using a set for faster lookup
     stored_hashes_set = set(stored_hashes)
 
-    # Identify processed hashes
+    # Identify processed hashes based on the first 6 characters
     processed_hashes = [h for h in hashes_to_check if h in stored_hashes_set]
 
-    print(f"Hashes que já existem no banco: {processed_hashes}")
+    print(f"Hashes que já existem no banco (primeiros 6 caracteres): {processed_hashes}")
 
-    # Filter out processed emails
-    unprocessed_emails = [email for email in emails_with_hashes if normalize_hash(email["hash"]) not in stored_hashes_set]
+    # Filter out processed emails based on the first 6 characters of their hash
+    unprocessed_emails = [
+        email for email in emails_with_hashes
+        if normalize_hash(email["hash"])[:6] not in stored_hashes_set
+    ]
 
     print(f"Hashes dos emails que serão processados: {[email['hash'] for email in unprocessed_emails]}")
 
