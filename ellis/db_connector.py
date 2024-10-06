@@ -34,7 +34,7 @@ def init_db():
     c.execute('''
         CREATE TABLE IF NOT EXISTS processed_emails (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email_hash VARCHAR(64) UNIQUE NOT NULL
+            email_hash VARCHAR(128) UNIQUE NOT NULL
         )
     ''')
     
