@@ -42,18 +42,17 @@ def filter_unprocessed_emails(emails_with_hashes):
         emails_with_hashes (list of dict): Lista de emails, cada um contendo uma chave 'hash'.
 
     Returns:
-        list of dict: Lista de emails não processados.
+        list de dict: Lista de emails não processados.
     """
-    # Extrair os hashes dos emails recebidos
     hashes_to_check = [email["hash"] for email in emails_with_hashes]
     print(f"Hashes recém-gerados: {hashes_to_check}")
 
-    # Se não há hashes para verificar, retorne a lista vazia
     if not hashes_to_check:
         return []
 
-    # Conectar ao banco de dados
+    # Conectar ao banco de dados correto e verificar o caminho
     conn = get_connection()
+    print(f"Conectado ao banco de dados: {path.abspath(DB_NAME)}")
     c = conn.cursor()
 
     # Recuperar todos os hashes armazenados no banco de dados
@@ -79,4 +78,5 @@ def filter_unprocessed_emails(emails_with_hashes):
     # Imprimir os hashes dos emails que serão processados
     print(f"Hashes dos emails que serão processados: {[email['hash'] for email in unprocessed_emails]}")
 
+    conn.close()
     return unprocessed_emails
