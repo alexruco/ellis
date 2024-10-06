@@ -1,5 +1,6 @@
+# db_connector.py
+
 import sqlite3
-from os import path
 
 # Define the path for the SQLite database
 DB_NAME = 'instance.db'
@@ -24,15 +25,16 @@ def init_db():
             recipient TEXT NOT NULL,
             subject TEXT,
             body TEXT,
-            email_hash TEXT UNIQUE NOT NULL
+            email_hash VARCHAR(64) UNIQUE NOT NULL
         )
     ''')
 
     # Create the processed_emails table to store email hashes
+    # Using VARCHAR(64) to ensure the full hash is stored
     c.execute('''
         CREATE TABLE IF NOT EXISTS processed_emails (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email_hash TEXT UNIQUE NOT NULL
+            email_hash VARCHAR(64) UNIQUE NOT NULL
         )
     ''')
     
