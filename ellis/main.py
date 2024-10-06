@@ -60,9 +60,10 @@ def get_new_messages():
             handle_incoming_email(email_data)
 
         # Step 5: Return the number of new emails processed
-        return len(unprocessed_emails)
+        return f'unprocessed_emails:{len(unprocessed_emails)}'
 
     except Exception as e:
         # If there's an error, return 0 or handle the error accordingly
         print(f"Error while fetching emails: {str(e)}")
         return 0
+    
