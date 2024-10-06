@@ -47,7 +47,7 @@ def get_new_messages():
     imap_server = get_imap_server()
 
     # Step 2: Print for verification (optional)
-    print(f"Using EMAIL_USERNAME: {username}, EMAIL_PASSWORD: {password}, IMAP_SERVER: {imap_server}")
+    #print(f"Using EMAIL_USERNAME: {username}, EMAIL_PASSWORD: {password}, IMAP_SERVER: {imap_server}")
 
     # Step 3: Fetch emails from the email server using the receive_emails function
     try:
