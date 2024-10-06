@@ -3,6 +3,10 @@
 from ellis.db_connector import get_connection
 from ellis.utils import extract_email_address
 
+# ellis/conversation_handler.py
+
+from ellis.db_connector import get_connection
+
 def process_email(email):
     """
     Processes an email by saving its details into the database and marking it as processed.
@@ -10,12 +14,15 @@ def process_email(email):
     Args:
         email (dict): The email data containing sender, recipient, subject, body, and hash.
     """
-    # Extract the actual email addresses from the full addresses
-    sender = extract_email_address(email["email"]["from"])
-    recipient = extract_email_address(email["email"]["to"])
+    # Extract necessary fields
+    sender = email["email"]["from"]
+    recipient = email["email"]["to"]
     subject = email["email"]["subject"]
     body = email["email"]["body"]
     email_hash = email["hash"]
+
+    # Print the hash of the email being processed
+    print(f"Processing email with hash: {email_hash}")
 
     # Connect to the SQLite database
     conn = get_connection()
@@ -27,14 +34,12 @@ def process_email(email):
         VALUES (?, ?, ?, ?, ?)
         ON CONFLICT(email_hash) DO NOTHING
     '''
-    
-    # Execute the insertion query with the extracted email addresses
     c.execute(insert_query, (sender, recipient, subject, body, email_hash))
     
     # Commit the changes
     conn.commit()
 
-    # Mark the email as processed by adding its hash to processed_emails
+    # Mark the email as processed by adding its hash to the processed_emails table
     append_to_processed_emails(email_hash)
 
     # Close the database connection
