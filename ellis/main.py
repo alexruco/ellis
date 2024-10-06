@@ -9,10 +9,13 @@ from ellis.get_env import get_username, get_password, get_imap_server  # Use get
 
 def get_history(email_address):
     """
-    Retrieves and displays the email history for a specific email address.
+    Retrieves and formats the email history for a specific email address.
 
     Args:
         email_address (str): The email address to search for.
+
+    Returns:
+        str: A formatted string representing the email history for the specified address.
     """
     # Ensure the database is initialized
     init_db()
@@ -20,13 +23,16 @@ def get_history(email_address):
     # Search email history based on the provided email address
     email_history = search_email_history(email_address)
 
-    # Display the search results
+    # Format the search results into a readable string
     if email_history:
-        print(f"Email history found for {email_address}:")
+        formatted_history = f"Email history found for {email_address}:\n"
         for email in email_history:
-            print(f"From: {email[0]}, To: {email[1]}, Subject: {email[2]}, Body: {email[3]}")
+            formatted_history += f"From: {email[0]}, To: {email[1]}, Subject: {email[2]}, Body: {email[3]}\n"
     else:
-        print(f"No email history found for {email_address}.")
+        formatted_history = f"No email history found for {email_address}."
+
+    return formatted_history
+
 
 def get_new_messages():
     """
@@ -58,4 +64,5 @@ if __name__ == "__main__":
     # get_new_messages()
     
     # Example: Get history for a specific email
-    get_history("alex@ruco.pt")
+    history = get_history("alex@ruco.pt")
+    print(history)  # Display the formatted email history
