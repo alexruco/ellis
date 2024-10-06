@@ -3,6 +3,7 @@
 from ellis.db_connector import get_connection
 from ellis.utils import extract_email_address, generate_email_hash, is_valid_email
 from ellis.conversation_handler import process_email
+import os
 
 def handle_incoming_email(email_data):
     """
@@ -44,15 +45,17 @@ def filter_unprocessed_emails(emails_with_hashes):
     Returns:
         list de dict: Lista de emails não processados.
     """
+    # Extrair os hashes dos emails recebidos
     hashes_to_check = [email["hash"] for email in emails_with_hashes]
     print(f"Hashes recém-gerados: {hashes_to_check}")
 
+    # Se não há hashes para verificar, retorne a lista vazia
     if not hashes_to_check:
         return []
 
     # Conectar ao banco de dados correto e verificar o caminho
     conn = get_connection()
-    print(f"Conectado ao banco de dados: {path.abspath(DB_NAME)}")
+    print(f"Conectado ao banco de dados: {os.path.abspath('instance.db')}")
     c = conn.cursor()
 
     # Recuperar todos os hashes armazenados no banco de dados
