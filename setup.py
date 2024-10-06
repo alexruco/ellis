@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='ellis',  # This will be the name of your package
-    version='0.3',
+    version='0.4',
     packages=find_packages(),
     install_requires=[
         # Add any external dependencies here
