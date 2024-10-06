@@ -53,11 +53,15 @@ def get_new_messages():
     try:
         email_data_list = receive_emails(username, password, imap_server)
         # Step 4: Process each email
+        total_email_retrieven = 0
         for email_data in email_data_list:
             handle_incoming_email(email_data)
+            total_email_retrieven = total_email_retrieven +1
 
     except Exception as e:
         print(f"Error while fetching emails: {str(e)}")
+        
+        return total_email_retrieven
 
 if __name__ == "__main__":
     # Uncomment to fetch and process incoming emails
