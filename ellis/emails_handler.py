@@ -44,10 +44,8 @@ def filter_unprocessed_emails(emails_with_hashes):
     Returns:
         list of dict: List of unprocessed emails.
     """
-    # Extract email hashes from the input emails
     hashes_to_check = [email["hash"] for email in emails_with_hashes]
 
-    # If there are no emails to process, return immediately
     if not hashes_to_check:
         return []
 
@@ -57,8 +55,6 @@ def filter_unprocessed_emails(emails_with_hashes):
 
     # Query to check if the email hash exists in the processed_emails table
     query = f'SELECT email_hash FROM processed_emails WHERE email_hash IN ({",".join("?" * len(hashes_to_check))})'
-    
-    # Execute the query with the list of hashes to check
     c.execute(query, hashes_to_check)
     processed_hashes = [row[0] for row in c.fetchall()]
 
@@ -66,5 +62,5 @@ def filter_unprocessed_emails(emails_with_hashes):
 
     # Filter out emails whose hash is in the processed_hashes list
     unprocessed_emails = [email for email in emails_with_hashes if email["hash"] not in processed_hashes]
-    
+
     return unprocessed_emails
