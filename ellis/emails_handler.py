@@ -80,7 +80,8 @@ def handle_incoming_email(email_data):
     # Validate the sender and recipient emails
     if is_valid_email(sender) and is_valid_email(recipient):
         # Generate a unique hash for the email
-        email_data["hash"] = generate_email_hash(email_data)
+        email_data["hash"] = email_data["email"]["hash"]
+        #generate_email_hash(email_data)
 
         # Process the email (store in DB and mark as processed)
         process_email(email_data)
