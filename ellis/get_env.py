@@ -27,3 +27,9 @@ def get_password():
 
 def get_imap_server():
     return get_env_variable("IMAP_SERVER")
+
+def get_smtp_server():
+    return get_env_variable("SMTP_SERVER")
+
+def get_port():
+    return get_env_variable("PORT")
