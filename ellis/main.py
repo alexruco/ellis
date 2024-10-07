@@ -70,6 +70,16 @@ def send_message(subject, body, recipient, sender_email):
     smtp_server= get_smtp_server()
     port= get_port()
     
+    print(f"smtp_server:{smtp_server}")
+    print(f"port:{port}")
+    print(f"username:{username}")
+    print(f"smtp_server:{smtp_server}")
+    print(f"password:{password}")
+    print(f"subject:{subject}")
+    print(f"body:{body}")
+    print(f"recipient:{recipient}")
+    print(f"sender_email:{sender_email}")
+
     send_email(smtp_server, port, username, password, subject, body, recipient, sender_email)
 
 # Example usage in __main__ for testing
