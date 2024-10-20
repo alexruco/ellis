@@ -4,3 +4,4 @@ nltk==3.8.1
 requests
 python-dotenv  # For environment variable management
 sqlite3  # Built-in, but listed for clarity
+git+https://github.com/alexruco/josephroulin.git@main#egg=josephroulin

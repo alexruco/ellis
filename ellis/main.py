@@ -80,10 +80,19 @@ def send_message(subject, body, recipient, sender_email):
     print(f"recipient:{recipient}")
     print(f"sender_email:{sender_email}")
 
-    send_email(smtp_server, port, username, password, subject, body, recipient, sender_email)
+    send_email(smtp_server=smtp_server, port=port, username=username, password=password, subject=subject, body=body, recipient=recipient, sender_email=sender_email)
 
 # Example usage in __main__ for testing
 if __name__ == "__main__":
     # Get new messages and display the number of newly processed emails
-    new_emails_count = get_new_messages()
-    print(f"Number of new emails processed: {new_emails_count}")
+    #new_emails_count = get_new_messages()
+    #print(f"Number of new emails processed: {new_emails_count}")
+    smtp_server="mail.seomaggie.com"
+    port=465
+    username="maggie@seomaggie.com"
+    smtp_server="mail.seomaggie.com"
+    password="?@c%wN~6e7*~"
+    subject="what is the capital of China?"
+    body="Cumprimentos / Kind regards"
+    recipient="alex@ruco.pt"
+    sender_email="maggie@seomaggie.com"
